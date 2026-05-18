@@ -1,23 +1,37 @@
-import { useState } from 'react';
+import { ActiveUserCard } from './features/users/components/ActiveUserCard'
+import { CreateUserForm } from './features/users/components/CreateUserForm'
+import { UserList } from './features/users/components/UserList'
+import { useUsers } from './features/users/hooks/useUsers'
 
 function App() {
-  const [count, setCount] = useState(0);
+  const {
+    users,
+    activeUser,
+    errorMessage,
+    isCreatingUser,
+    createUser,
+    selectUser,
+  } = useUsers()
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-8 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
-      <h1 className="mb-4 text-5xl font-bold">Vite + React + Tailwind</h1>
-      <p className="mb-8 text-lg text-gray-500 dark:text-gray-400">
-        Edit <code className="rounded bg-gray-200 px-2 py-1 text-sm dark:bg-gray-700">src/App.jsx</code> and save to
-        test HMR
-      </p>
-      <button
-        className="rounded-lg bg-indigo-600 px-6 py-3 font-medium text-white transition-colors hover:bg-indigo-700"
-        onClick={() => setCount((c) => c + 1)}
-      >
-        Count is {count}
-      </button>
-    </div>
-  );
+    <main className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
+      <section className="bg-slate-800 p-8 rounded-xl w-full max-w-md space-y-6">
+        <CreateUserForm
+          errorMessage={errorMessage}
+          isCreatingUser={isCreatingUser}
+          onCreateUser={createUser}
+        />
+
+        <ActiveUserCard activeUser={activeUser} />
+
+        <UserList
+          users={users}
+          activeUserId={activeUser?.id ?? null}
+          onSelectUser={selectUser}
+        />
+      </section>
+    </main>
+  )
 }
 
-export default App;
+export default App
