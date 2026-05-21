@@ -3,10 +3,13 @@ import type { User } from '../types/User'
 type UserListProps = {
   users: User[]
   activeUserId: string | null
+  isLoading: boolean
+  errorMessage: string
   onSelectUser: (userId: string) => void
 }
 
 const NO_USERS_MESSAGE = 'No users created yet.'
+const LOADING_USERS_MESSAGE = 'Loading users...'
 const ACTIVE_USER_LABEL = 'active'
 
 const BASE_USER_BUTTON_CLASS_NAME =
@@ -21,13 +24,18 @@ const DEFAULT_USER_BUTTON_CLASS_NAME =
 export function UserList({
   users,
   activeUserId,
+  isLoading,
+  errorMessage,
   onSelectUser,
 }: UserListProps) {
   return (
     <div className="space-y-3">
       <h2 className="text-xl font-semibold">Created users</h2>
 
-      {users.length === 0 ? (
+      {errorMessage && <p className="text-sm text-red-400">{errorMessage}</p>}
+      {isLoading ? (
+        <p className="text-sm text-slate-400">{LOADING_USERS_MESSAGE}</p>
+      ) : users.length === 0 ? (
         <p className="text-sm text-slate-400">{NO_USERS_MESSAGE}</p>
       ) : (
         <ul className="space-y-2">

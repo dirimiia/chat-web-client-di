@@ -19,7 +19,7 @@ export function CreateUserForm({
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const wasUserCreated = await onCreateUser({

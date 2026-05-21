@@ -8,6 +8,8 @@ function App() {
     users,
     activeUser,
     errorMessage,
+    isLoadingUsers,
+    usersLoadingErrorMessage,
     isCreatingUser,
     createUser,
     selectUser,
@@ -27,6 +29,8 @@ function App() {
         <UserList
           users={users}
           activeUserId={activeUser?.id ?? null}
+          isLoading={isLoadingUsers}
+          errorMessage={usersLoadingErrorMessage}
           onSelectUser={selectUser}
         />
       </section>

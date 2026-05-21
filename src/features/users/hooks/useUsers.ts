@@ -1,6 +1,6 @@
 import axios from 'axios'
-import { useState } from 'react'
-import { createUserInApi } from '../api/usersApi'
+import { useEffect, useState } from 'react'
+import { createUserInApi, getUsersFromApi } from '../api/usersApi'
 import type { CreateUserFormValues, User } from '../types/User'
 import {
   doesUserEmailAlreadyExist,
@@ -13,6 +13,8 @@ import {
 const EMPTY_ERROR_MESSAGE = ''
 const EMPTY_USERS: User[] = []
 
+const EMPTY_USERS_LOADING_ERROR_MESSAGE = ''
+const DEFAULT_LOAD_USERS_ERROR_MESSAGE = 'Could not load users.'
 const EMPTY_NAME_ERROR_MESSAGE = 'Please enter a name'
 const EMPTY_EMAIL_ERROR_MESSAGE = 'Please enter an email'
 const INVALID_EMAIL_ERROR_MESSAGE = 'Please enter a valid email'
@@ -28,6 +30,45 @@ export function useUsers() {
   const [activeUser, setActiveUser] = useState<User | null>(null)
   const [errorMessage, setErrorMessage] = useState(EMPTY_ERROR_MESSAGE)
   const [isCreatingUser, setIsCreatingUser] = useState(false)
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true)
+  const [usersLoadingErrorMessage, setUsersLoadingErrorMessage] = useState(
+    EMPTY_USERS_LOADING_ERROR_MESSAGE
+  )
+
+  useEffect(() => {
+    let timeoutId: number | undefined
+    let isStopped = false
+
+    async function loadUsersAndScheduleNextRun() {
+      try {
+        const usersFromApi = await getUsersFromApi()
+
+        if (!isStopped) {
+          setUsers(usersFromApi)
+          setUsersLoadingErrorMessage(EMPTY_USERS_LOADING_ERROR_MESSAGE)
+        }
+      } catch {
+        if (!isStopped) {
+          setUsersLoadingErrorMessage(DEFAULT_LOAD_USERS_ERROR_MESSAGE)
+        }
+      } finally {
+        if (!isStopped) {
+          setIsLoadingUsers(false)
+          timeoutId = window.setTimeout(loadUsersAndScheduleNextRun, 15000)
+        }
+      }
+    }
+
+    void loadUsersAndScheduleNextRun()
+
+    return () => {
+      isStopped = true
+
+      if (timeoutId !== undefined) {
+        window.clearTimeout(timeoutId)
+      }
+    }
+  }, [])
 
   async function createUser(formValues: CreateUserFormValues) {
     const trimmedName = formValues.name.trim()
@@ -93,6 +134,8 @@ export function useUsers() {
     users,
     activeUser,
     errorMessage,
+    isLoadingUsers,
+    usersLoadingErrorMessage,
     isCreatingUser,
     createUser,
     selectUser,

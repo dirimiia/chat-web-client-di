@@ -3,6 +3,12 @@ import type { CreateUserRequest, User } from '../types/User'
 
 const USERS_ENDPOINT = '/users'
 
+export async function getUsersFromApi() {
+  const response = await apiClient.get<User[]>(USERS_ENDPOINT)
+
+  return response.data
+}
+
 export async function createUserInApi(request: CreateUserRequest) {
   const response = await apiClient.post<User>(USERS_ENDPOINT, request)
 
